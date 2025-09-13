@@ -17,7 +17,8 @@ $project = [
     'name' => '',
     'description' => '',
     'location' => '',
-    'image_url' => ''
+    'image_url' => '',
+    'map_url' => ''
 ];
 
 if ($id) {
@@ -44,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // handle image upload if provided
     $new_image_url = $project['image_url'] ?? null;
+    $new_map_url = $project['map_url'] ?? null;
     if (!empty($_FILES['image']['name'])) {
         $f = $_FILES['image'];
         if ($f['error'] === UPLOAD_ERR_OK) {
@@ -66,29 +68,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // handle map upload if provided
+    if (!empty($_FILES['map_image']['name'])) {
+        $f = $_FILES['map_image'];
+        if ($f['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($f['name'], PATHINFO_EXTENSION);
+            $safeExt = preg_replace('/[^a-z0-9]/i', '', $ext);
+            $filename = uniqid('map_', true) . '.' . ($safeExt ?: 'jpg');
+            $target = $uploadDir . $filename;
+            if (move_uploaded_file($f['tmp_name'], $target)) {
+                $new_map_url = $publicUploadBase . $filename;
+                if (!empty($project['map_url'])) {
+                    $old = __DIR__ . '/../../' . ltrim($project['map_url'], '/');
+                    if (is_file($old)) @unlink($old);
+                }
+            } else {
+                $errors[] = "Failed to move uploaded map.";
+            }
+        } else {
+            $errors[] = "Map upload error code: " . (int)$f['error'];
+        }
+    }
+
     if (empty($errors)) {
         if ($id) {
             // update
-            $sql = "UPDATE projects SET name = :name, description = :description, location = :location, image_url = :image_url, updated_at = NOW() WHERE id = :id";
+            $sql = "UPDATE projects SET name = :name, description = :description, location = :location, image_url = :image_url, map_url = :map_url, updated_at = NOW() WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':name' => $name,
                 ':description' => $description,
                 ':location' => $location,
                 ':image_url' => $new_image_url,
+                ':map_url' => $new_map_url,
                 ':id' => $id
             ]);
             header('Location: projects-list.php?msg=' . urlencode('Project updated'));
             exit;
         } else {
             // insert
-            $sql = "INSERT INTO projects (name, description, location, image_url, created_at, updated_at) VALUES (:name, :description, :location, :image_url, NOW(), NOW())";
+            $sql = "INSERT INTO projects (name, description, location, image_url, map_url, created_at, updated_at) VALUES (:name, :description, :location, :image_url, :map_url, NOW(), NOW())";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':name' => $name,
                 ':description' => $description,
                 ':location' => $location,
-                ':image_url' => $new_image_url
+                ':image_url' => $new_image_url,
+                ':map_url' => $new_map_url
             ]);
             header('Location: projects-list.php?msg=' . urlencode('Project created'));
             exit;
@@ -143,6 +169,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
                 <input type="file" name="image" accept="image/*" class="form-control-file">
                 <small class="form-text text-muted">If you upload a new image it will replace the old one.</small>
+            </div>
+
+            <div class="form-group mt-3">
+                <label>Project Map (optional)</label>
+                <?php if (!empty($project['map_url'])): ?>
+                    <div class="mb-2">
+                        <img src="<?= htmlspecialchars($project['map_url']) ?>" style="max-width:200px;max-height:120px;">
+                    </div>
+                <?php endif; ?>
+                <input type="file" name="map_image" accept="image/*" class="form-control-file">
+                <small class="form-text text-muted">Upload full project map image.</small>
             </div>
 
             <button class="btn btn-primary"><?= $id ? 'Update' : 'Create' ?></button>
