@@ -45,8 +45,14 @@ if (!$project) {
                         <h5>Check availability</h5>
                         <p>To see blocks and book plots, click below to continue.</p>
 
-                        <!-- Link to protected plots page. plots-grid.php will require login -->
-                        <a href="plots-grid.php?project_id=<?= urlencode($project['id']) ?>" class="btn btn-success btn-lg w-100">Check Availability</a>
+                        <!-- Link to protected plots page. If not logged in, send to login with return -->
+                        <?php
+                        $plotsUrl = 'plots-grid.php?project_id=' . urlencode($project['id']);
+                        $checkUrl = !empty($_SESSION['user_id'])
+                            ? $plotsUrl
+                            : 'admin-login.php?return=' . urlencode($plotsUrl);
+                        ?>
+                        <a href="<?= $checkUrl ?>" class="btn btn-success btn-lg w-100">Check Availability</a>
 
                         <hr>
                         <small class="text-muted">Already an admin? <a href="admin-login.php">Admin login</a></small>

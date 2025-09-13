@@ -1,6 +1,7 @@
 <?php
 // public/admin/plots-save.php
 require_once __DIR__ . '/../../app/admin_auth.php';
+require_once __DIR__ . '/../../app/csrf.php';
 require_once __DIR__ . '/../../app/db.php';
 require_once __DIR__ . '/../../app/config.php';
 
@@ -53,7 +54,7 @@ if ($id && empty($_POST)) {
 
 // POST handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (empty($_POST['token']) || ($_POST['token'] !== ($_SESSION['admin_csrf'] ?? ''))) {
+    if (!verify_admin_csrf($_POST['token'] ?? null)) {
         $errors[] = "Invalid token";
     }
 
@@ -126,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="post">
-            <input type="hidden" name="token" value="<?= $_SESSION['admin_csrf'] ?? '' ?>">
+            <input type="hidden" name="token" value="<?= htmlspecialchars(admin_csrf_token()) ?>">
 
             <div class="form-group">
                 <label>Project</label>
