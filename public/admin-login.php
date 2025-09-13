@@ -24,6 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['admin_id']   = $user['id'];
             $_SESSION['admin_name'] = $user['name'];
             $_SESSION['admin_role'] = $user['role'] ?? 'user';
+            // also expose generic user_* session variables so login persists across the site
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_role'] = $user['role'] ?? 'user';
 
             // safety: allow only internal paths within this application
             $returnUrl = (strpos($return, '/') === 0 || strpos($return, 'admin/') === 0)

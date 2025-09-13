@@ -12,7 +12,7 @@ if (!$project_id) {
 // require login: redirect with return
 if (empty($_SESSION['user_id'])) {
     $cur = '/public/plots-grid.php?project_id=' . urlencode($project_id);
-    header('Location: /public/login.php?return=' . urlencode($cur));
+    header('Location: /public/admin-login.php?return=' . urlencode($cur));
     exit;
 }
 
