@@ -2,5 +2,6 @@
 session_start();
 $_SESSION = [];
 session_destroy();
-header('Location: ../public/admin-login.php');
+// Redirect back to admin login page
+header('Location: admin-login.php');
 exit;
