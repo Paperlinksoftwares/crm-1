@@ -1,6 +1,9 @@
 <?php
-session_start();
+// Admin dashboard requires authentication and shared helpers
+require_once __DIR__ . '/../../app/admin_auth.php';
+require_once __DIR__ . '/../../app/csrf.php';
 require_once __DIR__ . '/../../app/db.php';
+require_once __DIR__ . '/../../app/config.php';
 ?>
 <!doctype html>
 <html>
@@ -15,7 +18,7 @@ require_once __DIR__ . '/../../app/db.php';
 <body>
     <div class="container py-4">
         <h3>Admin Dashboard</h3>
-        <p>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?> — Role: <?php echo htmlspecialchars($_SESSION['role']); ?></p>
+        <p>Welcome, <?php echo htmlspecialchars($_SESSION['admin_name'] ?? ''); ?> — Role: <?php echo htmlspecialchars($_SESSION['admin_role'] ?? ''); ?></p>
         <ul>
             <li><a href="projects-list.php">Manage Projects</a></li>
             <li><a href="blocks-list.php">Manage Blocks</a></li>

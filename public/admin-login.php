@@ -2,7 +2,8 @@
 session_start();
 require_once __DIR__ . '/../app/db.php';
 
-$return = $_GET['return'] ?? '../public/index.php'; // default
+// After login, redirect to admin dashboard unless a specific return path is provided
+$return = $_GET['return'] ?? 'admin/dashboard.php';
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,12 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['password_hash'])) {
             session_regenerate_id(true);
-            $_SESSION['user_id']   = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'] ?? 'user';
+            $_SESSION['admin_id']   = $user['id'];
+            $_SESSION['admin_name'] = $user['name'];
+            $_SESSION['admin_role'] = $user['role'] ?? 'user';
 
-            // safety: allow only internal relative paths starting with /
-            $returnUrl = (strpos($return, '/') === 0) ? $return : '../public/index.php';
+            // safety: allow only internal paths within this application
+            $returnUrl = (strpos($return, '/') === 0 || strpos($return, 'admin/') === 0)
+                ? $return
+                : 'admin/dashboard.php';
             header('Location: ' . $returnUrl);
             exit;
         } else {
