@@ -148,6 +148,7 @@ CREATE TABLE `projects` (
   `description` text DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
   `image_url` varchar(512) DEFAULT NULL,
+  `map_url` varchar(512) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -156,9 +157,9 @@ CREATE TABLE `projects` (
 -- Dumping data for table `projects`
 --
 
-INSERT INTO `projects` (`id`, `name`, `description`, `location`, `image_url`, `created_at`, `updated_at`) VALUES
-(1, 'Lotus Residency', 'A modern gated project', 'Sector 12, City', 'uploads/lotus.jpg', '2025-09-04 20:48:01', '2025-09-04 20:48:01'),
-(3, 'Project 1', 'Description 1', 'Location 1', '/uploads/projects/proj_68bd52f6600b65.87965670.jpg', '2025-09-07 09:40:06', '2025-09-07 09:40:06');
+INSERT INTO `projects` (`id`, `name`, `description`, `location`, `image_url`, `map_url`, `created_at`, `updated_at`) VALUES
+(1, 'Lotus Residency', 'A modern gated project', 'Sector 12, City', 'uploads/lotus.jpg', NULL, '2025-09-04 20:48:01', '2025-09-04 20:48:01'),
+(3, 'Project 1', 'Description 1', 'Location 1', '/uploads/projects/proj_68bd52f6600b65.87965670.jpg', NULL, '2025-09-07 09:40:06', '2025-09-07 09:40:06');
 
 -- --------------------------------------------------------
 
